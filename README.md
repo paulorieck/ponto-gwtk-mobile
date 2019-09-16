@@ -1,6 +1,6 @@
 # GWTK Software - Registro de Ponto
 
-This is also a proof of concept project.
+This is mainly a proof of concept.
 
 ## :bookmark: License
 
