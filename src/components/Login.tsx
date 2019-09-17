@@ -1,9 +1,8 @@
 import React from 'react';
 import {Component} from 'react';
 import {View, KeyboardAvoidingView, Image, StyleSheet, Alert, TextInput, TouchableOpacity, Text} from 'react-native';
-import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
-import Logged from './Logged';
+import http_client from '../api/axios_common_client';
 
 interface FormProps {
     navigation: any;
@@ -11,19 +10,23 @@ interface FormProps {
 
 class Login extends Component<FormProps> {
 
+    static SampleVar: string
+
     state = {
         login: '',
         password: '', 
-        errorMessage: null, 
+        errorMessage: null,
         loggedIn: false
     };
 
     getTimeRegister = () => {
 
         // Get last time register
-        axios.post("https://ponto.gwtk.com.br/server/getLastRegister.php").then((response) => {
-            this.props.navigation.navigate('Logged', {id: response.data[0].id, intime: response.data[0].intime, outtime: response.data[0].outtime});
-        });
+        //http_client.post("getUserCredentials.php").then((response) => {
+            http_client.post("getLastRegister.php").then((response) => {
+                this.props.navigation.navigate('Logged', {id: response.data[0].id, intime: response.data[0].intime, outtime: response.data[0].outtime});
+            });
+        //});
 
     }
 
@@ -42,9 +45,11 @@ class Login extends Component<FormProps> {
     handleLogin = () => {
 
         // Do login
-        axios.post("https://ponto.gwtk.com.br/server/check_login.php", {'username': this.state.login, 'password': this.state.password}).then((response) => {
-            
-            //Alert.alert("Received response from check login: "+response.data)
+        const params = new URLSearchParams();
+        params.append('username', this.state.login);
+        params.append('password', this.state.password);
+
+        http_client({method: 'post', url: "check_login.php", data: params}).then(response => {
 
             if ( response.data === "Success" ) {
 
